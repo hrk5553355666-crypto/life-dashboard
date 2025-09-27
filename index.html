@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Life Dashboard</title>
+<style>
+  body {
+    font-family: 'Helvetica Neue', sans-serif;
+    background: #1e1e2f;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    height: 100vh;
+  }
+  h1 { color: #00ffc3; margin-bottom: 20px; }
+  .person { margin: 10px 0; }
+  .label { font-weight: bold; }
+  .progress {
+    background: #444;
+    width: 300px;
+    height: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+  }
+  .progress-bar {
+    height: 100%;
+    background: #00ffc3;
+    width: 0%;
+  }
+</style>
+</head>
+<body>
+<h1>🌟 Life Dashboard 🌟</h1>
+
+<div id="rajesh" class="person"></div>
+<div class="progress"><div id="rajeshBar" class="progress-bar"></div></div>
+
+<div id="family"></div>
+
+<script>
+// ----------------- Your Details -----------------
+const people = [
+  {name:"Rajesh", dob:"1992-06-17T12:22:00", lifespan:65},
+  {name:"Shital", dob:"1993-12-24T11:15:00"},
+  {name:"Father", dob:"1964-10-30T12:00:00"},
+  {name:"Mother", dob:"1970-01-01T12:00:00"},
+  {name:"Brother", dob:"1991-01-31T12:00:00"},
+  {name:"Risha", dob:"2024-12-24T12:00:00"}
+];
+
+// ----------------- Age Calculation -----------------
+function calculateAge(dob){
+  const birth = new Date(dob);
+  const now = new Date();
+  let diff = now - birth;
+  let years = Math.floor(diff / (1000*60*60*24*365.25));
+  diff -= years * (1000*60*60*24*365.25);
+  let months = Math.floor(diff / (1000*60*60*24*30.4375));
+  diff -= months * (1000*60*60*24*30.4375);
+  let days = Math.floor(diff / (1000*60*60*24));
+  diff -= days * (1000*60*60*24);
+  let hours = Math.floor(diff / (1000*60*60));
+  diff -= hours * (1000*60*60);
+  let minutes = Math.floor(diff / (1000*60));
+  diff -= minutes * (1000*60);
+  let seconds = Math.floor(diff / 1000);
+  return {years, months, days, hours, minutes, seconds};
+}
+
+// ----------------- Lifespan Countdown -----------------
+function timeLeft(dob, lifespan){
+  const birth = new Date(dob);
+  const end = new Date(birth.getFullYear() + lifespan, birth.getMonth(), birth.getDate(), birth.getHours(), birth.getMinutes());
+  const now = new Date();
+  let diff = end - now;
+  if(diff<0) return {years:0, months:0, days:0, hours:0, minutes:0, seconds:0};
+  let years = Math.floor(diff / (1000*60*60*24*365.25));
+  diff -= years * (1000*60*60*24*365.25);
+  let months = Math.floor(diff / (1000*60*60*24*30.4375));
+  diff -= months * (1000*60*60*24*30.4375);
+  let days = Math.floor(diff / (1000*60*60*24));
+  diff -= days * (1000*60*60*24);
+  let hours = Math.floor(diff / (1000*60*60));
+  diff -= hours * (1000*60*60);
+  let minutes = Math.floor(diff / (1000*60));
+  diff -= minutes * (1000*60);
+  let seconds = Math.floor(diff / 1000);
+  return {years, months, days, hours, minutes, seconds};
+}
+
+// ----------------- Update Dashboard -----------------
+function updateDashboard(){
+  const rajeshAge = calculateAge(people[0].dob);
+  const rajeshLeft = timeLeft(people[0].dob, people[0].lifespan);
+  document.getElementById("rajesh").innerHTML = `<span class="label">Rajesh:</span> ${rajeshAge.years}y ${rajeshAge.months}m ${rajeshAge.days}d ${rajeshAge.hours}h ${rajeshAge.minutes}m ${rajeshAge.seconds}s<br>⏳ Time Left: ${rajeshLeft.years}y ${rajeshLeft.months}m ${rajeshLeft.days}d ${rajeshLeft.hours}h ${rajeshLeft.minutes}m ${rajeshLeft.seconds}s`;
+  // Progress bar
+  let percent = ((rajeshAge.years + rajeshAge.months/12 + rajeshAge.days/365.25)/people[0].lifespan)*100;
+  document.getElementById("rajeshBar").style.width = percent + "%";
+  
+  // Family members
+  const familyDiv = document.getElementById("family");
+  familyDiv.innerHTML = "";
+  for(let i=1;i<people.length;i++){
+    let age = calculateAge(people[i].dob);
+    let div = document.createElement("div");
+    div.className = "person";
+    div.innerHTML = `<span class="label">${people[i].name}:</span> ${age.years}y ${age.months}m ${age.days}d`;
+    familyDiv.appendChild(div);
+  }
+}
+
+// ----------------- Run Update Every Second -----------------
+setInterval(updateDashboard, 1000);
+updateDashboard();
+</script>
+</body>
+</html>
